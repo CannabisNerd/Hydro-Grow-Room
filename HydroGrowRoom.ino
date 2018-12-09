@@ -1,3 +1,8 @@
+
+// A Free cayenne Dashboard account is needed for this sketch, Create account at https://mydevices.com/. Add a device (ESP8266)
+//This will create a new dashboard, edit this sketch with the login it provides you. 
+
+
 #include <TimeLib.h>
 #include <Time.h>
 #include <TimeAlarms.h>
@@ -20,12 +25,12 @@ const int cycle = 1000 * 60 * 7; //Set time Pump stays on for, I run this cycle 
 
 int lightStatus = 0; // Variable to store Light Status 
 
-const char ssid[] = "notyournetwork";  //  your network SSID (name)
-const char pass[] = "jailbreak";       // your network password
+const char ssid[] = "YOUR_SSID";  //  your network SSID (name)
+const char pass[] = "YOUR_PASSWORD";       // your network password
 
-char username[] = "54cc3ac0-900b-11e7-b546-bf6ccbcd8710"; // Cayenne MQTT Username
-char password[] = "e15be8129aaa0bdd96a96f84a812fe8735d02904"; // Cayenne MQTT Password
-char clientID[] = "8478fe90-589a-11e8-a700-878cdd8a64eb"; // Cayenne MQTT Client ID
+char username[] = "54cc****-****-*****-*****-****cbcd8710"; // Cayenne MQTT Username
+char password[] = "e15b*******************812fe8735d02904"; // Cayenne MQTT Password
+char clientID[] = "847***********-*****-********-d8a64eb"; // Cayenne MQTT Client ID
 
 
 // NTP Servers:
@@ -139,6 +144,8 @@ void pumpON() {
 
   // Turns Pump on for the cycle time we set above. I run the cycle twice with a 1 minute delay in between to drain the table.
   // It allows me to use a slightly smaller reservoir. So the cycle set above is actually doubled currently.
+  // All other functions will be disabled during this cycle due to the use of delay, 
+  // I will be updating at a later date to use millis() instead.
   digitalWrite(PUMPPIN, HIGH);
   Alarm.delay(cycle);
   digitalWrite(PUMPPIN, LOW);
