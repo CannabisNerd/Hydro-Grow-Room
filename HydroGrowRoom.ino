@@ -65,14 +65,14 @@ void setup()
  // Schedule All alarms and timers 
  // TimeAlarms.h defaults to a maximum of 6 alarms, ESP devices can handle many more. Edit the TimeAlarms.h file to increase this limit, the more alarms the more RAM used
    
-   Alarm.alarmRepeat(8, 5, 0, pumpON);
-  Alarm.alarmRepeat(11, 5, 0, pumpON);
-  Alarm.alarmRepeat(14, 5, 0, pumpON);
-  Alarm.alarmRepeat(17, 5, 0, pumpON);
-  Alarm.alarmRepeat(20, 5, 0, pumpON);
-  Alarm.alarmRepeat(23, 5, 0, pumpON);
-  Alarm.alarmRepeat(3, 5, 0, pumpON);
-  Alarm.alarmRepeat(0, 0, 1, UpdateNTP);
+   Alarm.alarmRepeat(8, 0, 0, pumpON); // 8:00:00 AM 
+  Alarm.alarmRepeat(11, 0, 0, pumpON); // 11:00:00 AM 
+  Alarm.alarmRepeat(14, 0, 0, pumpON); // 2:00:00 PM 
+  Alarm.alarmRepeat(17, 0, 0, pumpON); // 5:00:00 PM 
+  Alarm.alarmRepeat(20, 0, 0, pumpON); // 8:00:00 PM 
+  Alarm.alarmRepeat(23, 0, 0, pumpON); // 11:00:00 PM 
+  Alarm.alarmRepeat(3, 0, 0, pumpON); // 3:00:00 AM 
+  Alarm.alarmRepeat(0, 0, 1, UpdateNTP); // Updates time at 1 second past midnight daily
   Serial.println("Pump Programmed");
 }
 
