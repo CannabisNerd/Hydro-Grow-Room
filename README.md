@@ -2,6 +2,8 @@ Web based IoT Hydroponics Grow Room sketch using Arduino IDE for the ESP8266. Or
 
 Sketch relies on a free account at https://mydevices.com/ Once account is created you will add a new device and will be given a username, password, and client ID that is device specific. Edit this sketch to include your information.
 
+This is what a simple dashboard looks like https://imgur.com/a/5VZf8U3
+
 Features:
 Uses a DS18b20 and onewire bus to monitor water reservoir temperature (Can be adopted for DWC systems with a sensore per site)
 DHT11 or DHT22 sensor for Air Temp and humidity, DHT22 has a humidity range that maxes at 80% so I suggest the DHT11
