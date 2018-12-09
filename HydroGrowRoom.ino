@@ -1,8 +1,3 @@
-
-// A Free cayenne Dashboard account is needed for this sketch, Create account at https://mydevices.com/. Add a device (ESP8266)
-//This will create a new dashboard, edit this sketch with the login it provides you. 
-
-
 #include <TimeLib.h>
 #include <Time.h>
 #include <TimeAlarms.h>
@@ -21,16 +16,17 @@ DHTesp dht; // Tells DHT commands to use DHTEsp library
 OneWire oneWire(D3); // Establishes Onewire communication on D3
 DallasTemperature sensors(&oneWire); // Starts communication with Water temp sensor
 
+unsigned long previousMillis = 0; // Timing variable
 const int cycle = 1000 * 60 * 7; //Set time Pump stays on for, I run this cycle twice
 
-int lightStatus = 0; // Variable to store Light Status 
+int lightStatus = 0; // Variable to store Light Status
 
-const char ssid[] = "YOUR_SSID";  //  your network SSID (name)
-const char pass[] = "YOUR_PASSWORD";       // your network password
+const char ssid[] = "notyournetwork";  //  your network SSID (name)
+const char pass[] = "jailbreak";       // your network password
 
-char username[] = "54cc****-****-*****-*****-****cbcd8710"; // Cayenne MQTT Username
-char password[] = "e15b*******************812fe8735d02904"; // Cayenne MQTT Password
-char clientID[] = "847***********-*****-********-d8a64eb"; // Cayenne MQTT Client ID
+char username[] = "54cc3ac0-900b-11e7-b546-bf6ccbcd8710"; // Cayenne MQTT Username
+char password[] = "e15be8129aaa0bdd96a96f84a812fe8735d02904"; // Cayenne MQTT Password
+char clientID[] = "8478fe90-589a-11e8-a700-878cdd8a64eb"; // Cayenne MQTT Client ID
 
 
 // NTP Servers:
@@ -50,9 +46,9 @@ void sendNTPpacket(IPAddress &address);
 void setup()
 {
   Serial.begin(115200);
-  Cayenne.begin(username, password, clientID, ssid, pass); // Starts Cayenne 
+  Cayenne.begin(username, password, clientID, ssid, pass); // Starts Cayenne
   sensors.begin(); // Starts sensors
-  dht.setup(DHTPIN); // Connect DHT sensor
+  dht.setup(DHTPIN, DHTesp::DHT11); // Connect DHT sensor
   pinMode(PUMPPIN, OUTPUT); // Set PUMP pin to output
   digitalWrite(PUMPPIN, LOW); // Set PUMP pin to low so pump is off at start up
 
@@ -61,18 +57,18 @@ void setup()
   UpdateNTP(); // Updates Time at boot
 
   Serial.println("Programming Pump......");
- 
- // Schedule All alarms and timers 
- // TimeAlarms.h defaults to a maximum of 6 alarms, ESP devices can handle many more. Edit the TimeAlarms.h file to increase this limit, the more alarms the more RAM used
-   
-   Alarm.alarmRepeat(8, 0, 0, pumpON); // 8:00:00 AM 
-  Alarm.alarmRepeat(11, 0, 0, pumpON); // 11:00:00 AM 
-  Alarm.alarmRepeat(14, 0, 0, pumpON); // 2:00:00 PM 
-  Alarm.alarmRepeat(17, 0, 0, pumpON); // 5:00:00 PM 
-  Alarm.alarmRepeat(20, 0, 0, pumpON); // 8:00:00 PM 
-  Alarm.alarmRepeat(23, 0, 0, pumpON); // 11:00:00 PM 
-  Alarm.alarmRepeat(3, 0, 0, pumpON); // 3:00:00 AM 
-  Alarm.alarmRepeat(0, 0, 1, UpdateNTP); // Updates time at 1 second past midnight daily
+
+  // Schedule All alarms and timers
+  // TimeAlarms.h defaults to a maximum of 6 alarms, ESP devices can handle many more. Edit the TimeAlarms.h file to increase this limit, the more alarms the more RAM used
+
+  Alarm.alarmRepeat(8, 5, 0, pumpON);
+  Alarm.alarmRepeat(11, 5, 0, pumpON);
+  Alarm.alarmRepeat(14, 5, 0, pumpON);
+  Alarm.alarmRepeat(17, 5, 0, pumpON);
+  Alarm.alarmRepeat(20, 5, 0, pumpON);
+  Alarm.alarmRepeat(23, 5, 0, pumpON);
+  Alarm.alarmRepeat(3, 5, 0, pumpON);
+  Alarm.alarmRepeat(0, 0, 1, UpdateNTP);
   Serial.println("Pump Programmed");
 }
 
@@ -80,7 +76,7 @@ void setup()
 void loop()
 {
   Alarm.delay(1000); // Use Alarm.delay instead of delay with this sketch
-  Cayenne.loop(); // Runs Cayenne loop
+  Cayenne.loop(); // Needed for Cayenne Dashboard to Work properly
   SendData(); // Calls function to update Cayenne dashboard
 }
 
@@ -88,34 +84,34 @@ void SendData() {
   sensors.requestTemperatures(); // Reads OneWire temperature probe
   float humidity = dht.getHumidity(); // Reads DHT air Humidity
   float temperature = dht.getTemperature(); //Reads DHT Air Temp
- 
+
   //Prints data to Serial dor Debugging
   Serial.println(temperature);
   Serial.println(humidity);
   Serial.println(sensors.getTempCByIndex(0));
 
-  //Sends all sensor data to Cayenne  
+  //Sends all sensor data to Cayenne
   Cayenne.virtualWrite(0, temperature);
   Cayenne.virtualWrite(1, humidity);
   Cayenne.celsiusWrite(2, sensors.getTempCByIndex(0));
   //
-  
+
   lightStatus = analogRead(A0); // Reads Light sensors analog value
   Serial.print("Light status is: ");
 
- 
+
   if (lightStatus > 500) // Checks if analog value of light sensor is above what it should be if light is on
   {
     //setting a threshold value
     Cayenne.virtualWrite(4, 1, "digital_sensor", "d"); // Sends digital on command to Cayenne to say light is on
     // Prints Analog and digital values to serial for debugging
-    Serial.println("ON"); 
-    Serial.println(lightStatus); 
+    Serial.println("ON");
+    Serial.println(lightStatus);
   }
 
   else {
     Cayenne.virtualWrite(4, 0, "digital_sensor", "d"); // Sends digital off command to cayenne
- // Prints Analog and digital values to serial for debugging
+    // Prints Analog and digital values to serial for debugging
     Serial.println("OFF");
     Serial.println(lightStatus);
   }
@@ -144,16 +140,28 @@ void pumpON() {
 
   // Turns Pump on for the cycle time we set above. I run the cycle twice with a 1 minute delay in between to drain the table.
   // It allows me to use a slightly smaller reservoir. So the cycle set above is actually doubled currently.
-  // All other functions will be disabled during this cycle due to the use of delay, 
+  // All other functions will be disabled during this cycle due to the use of delay,
   // I will be updating at a later date to use millis() instead.
-  digitalWrite(PUMPPIN, HIGH);
-  Alarm.delay(cycle);
-  digitalWrite(PUMPPIN, LOW);
-  Alarm.delay(1000 * 60);
-  digitalWrite(PUMPPIN, HIGH);
-  Alarm.delay(cycle);
-  digitalWrite(PUMPPIN, LOW);
 
+  unsigned long pumpMillis = millis();
+
+  digitalWrite(PUMPPIN, HIGH);
+
+  if (pumpMillis - previousMillis >= cycle) {
+    previousMillis = pumpMillis;
+
+    digitalWrite(PUMPPIN, LOW);
+  }
+
+  Alarm.delay(1000 * 60);
+
+  digitalWrite(PUMPPIN, HIGH);
+
+  if (pumpMillis - previousMillis >= cycle) {
+    previousMillis = pumpMillis;
+
+    digitalWrite(PUMPPIN, LOW);
+  }
 
 }
 
