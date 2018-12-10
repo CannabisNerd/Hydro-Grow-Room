@@ -16,7 +16,6 @@ DHTesp dht; // Tells DHT commands to use DHTEsp library
 OneWire oneWire(D3); // Establishes Onewire communication on D3
 DallasTemperature sensors(&oneWire); // Starts communication with Water temp sensor
 
-unsigned long previousMillis = 0; // Timing variable
 const int cycle = 1000 * 60 * 7; //Set time Pump stays on for, I run this cycle twice
 
 int lightStatus = 0; // Variable to store Light Status
@@ -143,25 +142,13 @@ void pumpON() {
   // All other functions will be disabled during this cycle due to the use of delay,
   // I will be updating at a later date to use millis() instead.
 
-  unsigned long pumpMillis = millis();
-
   digitalWrite(PUMPPIN, HIGH);
-
-  if (pumpMillis - previousMillis >= cycle) {
-    previousMillis = pumpMillis;
-
-    digitalWrite(PUMPPIN, LOW);
-  }
-
-  Alarm.delay(1000 * 60);
-
+  Alarm.delay(cyle);
+  digitalWrite(PUMPPIN, LOW);
+  Alarm.delay(1000 * 60)
   digitalWrite(PUMPPIN, HIGH);
-
-  if (pumpMillis - previousMillis >= cycle) {
-    previousMillis = pumpMillis;
-
+Alarm.delay(cyle);
     digitalWrite(PUMPPIN, LOW);
-  }
 
 }
 
