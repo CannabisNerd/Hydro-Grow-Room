@@ -6,7 +6,7 @@ This is what a simple dashboard looks like https://imgur.com/a/5VZf8U3
 
 Features:
 Uses a DS18b20 and onewire bus to monitor water reservoir temperature (Can be adopted for DWC systems with a sensore per site)
-DHT11 or DHT22 sensor for Air Temp and humidity, DHT22 has a humidity range that maxes at 80% so I suggest the DHT11
+DHT11 or DHT22 sensor for Air Temp and humidity, DHT11 has a humidity range that maxes at 80% so I suggest the DHT22
 5V relay wired to 110V AC outlet for pump control
 Photoresistor light sensor 
 
